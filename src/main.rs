@@ -8,7 +8,7 @@ use crate::passwords::get_passwords_from_file;
 use crate::passwords::prompt;
 
 fn clear() {
-    print!("{}[2J", 27 as char);
+    print!("{esc}c", esc = 27 as char);
 }
 
 fn main() {
@@ -49,6 +49,7 @@ fn main() {
             }
             "2" => {
                 clear();
+                println!("================ All Entries ================");
                 let services = get_passwords_from_file().unwrap_or_else(|err| {
                     eprintln!("Error while getting all services: {}", err);
                     let dummy_service = vec![Service::new(); 1];
@@ -57,10 +58,12 @@ fn main() {
 
                 for item in &services {
                     println!(
-                        "Service: {} \n username: {} \n password: {}",
+                        "\n Service: {} \n username: {} \n password: {}",
                         item.service, item.username, item.password
                     );
                 }
+                println!("\n");
+                println!("================ End of List ================");
             }
             "3" => {
                 clear();
@@ -70,13 +73,15 @@ fn main() {
                     dummy_service
                 });
 
-                let search_text = prompt("Search: ");
+                let search_text = prompt("Please enter the service name to search: ");
                 for item in &services {
                     if search_text == item.service {
                         println!(
                             "Service: {} \n username: {} \n password: {}",
                             item.service, item.username, item.password
                         );
+                    } else {
+                        println!("No entry found for the service: {}", search_text);
                     }
                 }
             }
@@ -89,5 +94,6 @@ fn main() {
                 eprintln!("Invalid Entry");
             }
         }
+        println!("\n \n");
     }
 }
